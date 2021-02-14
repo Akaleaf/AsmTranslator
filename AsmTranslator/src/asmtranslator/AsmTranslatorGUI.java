@@ -5,11 +5,14 @@
  */
 package asmtranslator;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 
 /**
  *
@@ -17,6 +20,16 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AsmTranslatorGUI extends javax.swing.JFrame {
 
+    final String MSG_ERROR_UNKNOWN = "Ошибка: Неизвестная Ошибка";
+    final String MSG_ERROR_WRONG_DIRECTIVE = "Ошибка: Неверная директива";
+    final String MSG_ERROR_WRONG_SEGMENT = "Ошибка: Неверный сегмент данных";
+    final String MSG_ERROR_WRONG_COMMAND = "Ошибка: Неверная команда";
+    final String MSG_ERROR_DUPLICATE_NAME = "Ошибка: Повторяющееся имя";
+    final String MSG_ERROR_OPERAND_UNDEFINED = "Ошибка: Операнд не определён";
+    final String MSG_ERROR_OPERAND_NOT_ENOUGH = "Ошибка: Недостаточно операндов";
+    
+    
+    
     /**
      * Creates new form AsmTranslatorGUI
      */
@@ -38,8 +51,8 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
         panelSourceLabel = new javax.swing.JPanel();
         labelSource = new javax.swing.JLabel();
         panelSourceText = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        textAreaSource = new javax.swing.JTextArea();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        textPaneSource = new javax.swing.JTextPane();
         panelResult = new javax.swing.JPanel();
         panelResultLabel = new javax.swing.JPanel();
         labelResult = new javax.swing.JLabel();
@@ -78,32 +91,32 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        textAreaSource.setColumns(20);
-        textAreaSource.setRows(5);
-        textAreaSource.setText(".DATA\n     n    db    5\n     m   db    3\n     t     db    10\n     y    dw    ?\n.CODE\nMOV AL,  2\t\nMOV   BL,   n\nmul    BL\t\t\nmov   cx, AX\t\nmov   AL,  m\nmov   BL,   t\nmul    BL\t\nadd    AX, CX\t\nmov   y,  AX\t\n");
-        textAreaSource.addKeyListener(new java.awt.event.KeyAdapter() {
+        textPaneSource.setText(".DATA\n     n    db    5\n     m   db    3\n     t     db    10\n     y    dw    ?\n.CODE\n\n\nMOV AL,  2\t\nMOV   BL,   n\nmul    BL\t\t\nmov   cx, AX\t\nmov   AL,  m\nmov   BL,   t\nmul    BL\t\nadd    AX, CX\t\nmov   y,  AX\t\n");
+        textPaneSource.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                textAreaSourceKeyReleased(evt);
+                textPaneSourceKeyReleased(evt);
             }
         });
-        jScrollPane1.setViewportView(textAreaSource);
+        jScrollPane4.setViewportView(textPaneSource);
 
         javax.swing.GroupLayout panelSourceTextLayout = new javax.swing.GroupLayout(panelSourceText);
         panelSourceText.setLayout(panelSourceTextLayout);
         panelSourceTextLayout.setHorizontalGroup(
             panelSourceTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane4)
         );
         panelSourceTextLayout.setVerticalGroup(
             panelSourceTextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout panelSourceLayout = new javax.swing.GroupLayout(panelSource);
         panelSource.setLayout(panelSourceLayout);
         panelSourceLayout.setHorizontalGroup(
             panelSourceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelSourceLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(panelSourceLayout.createSequentialGroup()
+                .addComponent(panelSourceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(panelSourceText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelSourceLayout.setVerticalGroup(
@@ -205,10 +218,12 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
         panelResult.setLayout(panelResultLayout);
         panelResultLayout.setHorizontalGroup(
             panelResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelResultLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(panelSNT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(panelHexLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panelHex, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelResultLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(panelHex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(panelResultLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelResultLayout.setVerticalGroup(
             panelResultLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -236,11 +251,11 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
         );
         panelMainLayout.setVerticalGroup(
             panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelMainLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelResult, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelSource, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(panelResult, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelSource, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -258,15 +273,38 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void textAreaSourceKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaSourceKeyReleased
-        updateResults();
-    }//GEN-LAST:event_textAreaSourceKeyReleased
-
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         updateResults();
     }//GEN-LAST:event_formWindowActivated
 
+    private void textPaneSourceKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textPaneSourceKeyReleased
+        updateResults();
+    }//GEN-LAST:event_textPaneSourceKeyReleased
+
+    private void printError() {
+        textAreaHex.append(MSG_ERROR_UNKNOWN);
+    }
+    
+    private void printError(String msgError) {
+        textAreaHex.append(msgError);
+    }
+    
+    private void printError(String msgError, String cause) {
+        textAreaHex.append(msgError + ": " + cause);
+    }
+    
+    private void paintLineToRed(String line, int start) {
+//        line += "\n";
+        Highlighter.HighlightPainter redPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+        try {
+            textPaneSource.getHighlighter().addHighlight(start, start + line.length(), redPainter);
+        } catch (Exception e) {}
+
+    }
+    
     private boolean updateResults() {
+        
+        textPaneSource.getHighlighter().removeAllHighlights();
         
         DefaultTableModel jsntModel = (DefaultTableModel)snt.getModel();
         jsntModel.setRowCount(0);
@@ -324,7 +362,11 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
         };
         // Инициализация статичной таблицы регистров - конец
         
-        for (String line : textAreaSource.getText().split("\\n")) {
+        int textPaneSourceSymbolsIndexCounter = 0;
+        
+        for (String line : textPaneSource.getText().split("\\n")) {
+            
+            textPaneSourceSymbolsIndexCounter += line.length() + 1;
             
             // Разделить строку на массив слов. Разделителем выступает " "
             String splittedLine[] = line.split(" ");
@@ -333,14 +375,19 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
             splittedLine = removeEmptyValuesFromTheArray(splittedLine);
 
             // Определяем на каком сегменте мы находимся на момент обработки строки
-            if (splittedLine[0].equals(".DATA")) {
-                segment = ".DATA";
-                continue;
-            } else if (splittedLine[0].equals(".CODE")) {
-                segment = ".CODE";
+            try {
+                if (splittedLine[0].equals(".DATA")) {
+                    segment = ".DATA";
+                    continue;
+                } else if (splittedLine[0].equals(".CODE")) {
+                    segment = ".CODE";
+                    continue;
+                }
+            } catch (Exception e) {
+                // Попалась пустая строка
                 continue;
             }
-
+            
             // СЕГМЕНТ 
             // ОБРАБОТКИ 
             // .DATA
@@ -364,11 +411,15 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                 boolean alreadyHaveThisName = false;
                 for (String[] sntItem: snt) {
                     if (sntItem[0].equals(splittedLine[0])) {
+                        // Вывести ошибку о повторяющемся имени
+                        printError(MSG_ERROR_DUPLICATE_NAME, splittedLine[0]);
+                        paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
+//                        paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
                         alreadyHaveThisName = true;
                     }
                 }
                 // Пропускаем строку
-                if (alreadyHaveThisName) continue;
+                if (alreadyHaveThisName) return false;
                 // А если не пропускаем строку, значит новое имя заносим в массив
                 sntArrayToAdd[0] = splittedLine[0];
                 // Обработка имени переменной - конец
@@ -394,54 +445,61 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                         byteSizeFlag = 8;
                         break;
                     default:
-                        byteSizeFlag = 0;
+                        // Вывести ошибку о неверной директиве
+                        printError(MSG_ERROR_WRONG_DIRECTIVE, splittedLine[1]);
+                        paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
+                        return false;
                 }
                 // Определение байтового размера на основе команды - конец
 
                 // Добавим в массив значение байтового размера
                 sntArrayToAdd[2] = Integer.toString(byteSizeFlag);
 
-                // Если третье слово в строке это "dup"
-                if (splittedLine[2].equals("dup")) {
-                    // После "dup" стоит какое-либо число. Например 100 в строке "dup 100(0)"
-                    // "dups" будет хранить это число
-                    String dups = "";
-                    // Определяем какое число стоит после "dup"
-                    int incr = 0;
-                    while (!(splittedLine[3].charAt(incr) == '(')) {
-                        dups += splittedLine[3].charAt(incr++);
+                try {
+                    // Если третье слово в строке это "dup"
+                    if (splittedLine[2].equals("dup")) {
+                        // После "dup" стоит какое-либо число. Например 100 в строке "dup 100(0)"
+                        // "dups" будет хранить это число
+                        String dups = "";
+                        // Определяем какое число стоит после "dup"
+                        int incr = 0;
+                        while (!(splittedLine[3].charAt(incr) == '(')) {
+                            dups += splittedLine[3].charAt(incr++);
+                        }
+                        incr++;
+                        // В скобках после "dup" стоит какое-либо значение. Например 0 в строке "dup 100(0)"
+                        // "number" будет хранить это значение
+                        String value = "";
+                        while (!(splittedLine[3].charAt(incr) == ')')) {
+                            value += splittedLine[3].charAt(incr++);
+                        }
+                        // dups раз переводим nubmer в Hex-представление и dups раз добавляем number в массив
+                        for (int increm = 0; increm < Integer.parseInt(dups); increm++) {
+                            sntArrayToAdd[3] += toHex(value);
+                        }
+                        // Подсчитываем CA
+                        addressCounter += (byteSizeFlag * Integer.parseInt(dups));
+                    } 
+                    // Если третье слово в строке это не "dup"
+                    else {
+                        // Проходим по всем значениям, переводим их в Hex представление и заносим в массив
+                        int increment = 2;
+                        while (increment < splittedLine.length) {
+                            sntArrayToAdd[3] += (toHex(splittedLine[increment])).toUpperCase();
+                            increment++;
+                        }
+                        // Подсчитываем CA
+                        addressCounter += (byteSizeFlag * (splittedLine.length - 2));
                     }
-                    incr++;
-                    // В скобках после "dup" стоит какое-либо значение. Например 0 в строке "dup 100(0)"
-                    // "number" будет хранить это значение
-                    String value = "";
-                    while (!(splittedLine[3].charAt(incr) == ')')) {
-                        value += splittedLine[3].charAt(incr++);
-                    }
-                    // dups раз переводим nubmer в Hex-представление и dups раз добавляем number в массив
-                    for (int increm = 0; increm < Integer.parseInt(dups); increm++) {
-                        sntArrayToAdd[3] += toHex(value);
-                    }
-                    // Подсчитываем CA
-                    addressCounter += (byteSizeFlag * Integer.parseInt(dups));
-                } 
-                // Если третье слово в строке это не "dup"
-                else {
-                    // Проходим по всем значениям, переводим их в Hex представление и заносим в массив
-                    // ДОДЕЛАТЬ: 
-                    // рассмотреть случай "Dat1 db 1, 2, 10, 15, , ,"
-                    int increment = 2;
-                    while (increment < splittedLine.length) {
-                        sntArrayToAdd[3] += (toHex(splittedLine[increment])).toUpperCase();
-                        increment++;
-                    }
-                    // Подсчитываем CA
-                    addressCounter += (byteSizeFlag * (splittedLine.length - 2));
+                } catch (Exception e) {
+                    printError();
+                    paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
+                    return false;
                 }
                 
                 jsntModel.addRow(new Object[]{sntArrayToAdd[0], sntArrayToAdd[1], sntArrayToAdd[2], sntArrayToAdd[3]});
                 
-                System.out.println(Arrays.toString(sntArrayToAdd));
+//                System.out.println(Arrays.toString(sntArrayToAdd));
                 // Добавляем в список массив
                 snt.add(sntArrayToAdd);
             } else 
@@ -475,6 +533,9 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
 
                 // Если команды в таблице нет
                 if (!commandIsCorrect) {
+                    // Вывести ошибку о неверной команде
+                    printError(MSG_ERROR_WRONG_COMMAND, command);
+                    paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
                     // И завершить работу приложения
                     return false;
                 }
@@ -482,20 +543,27 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
 
                 // Проверяем какого типа первый операнд:
                 // Регистр или память? - начало
-                String firstOperand = splittedLine[1];
+                String firstOperand = "";
                 String firstOperandHex = "";
                 String firstOperandType = "";
-
-                // Пройдёмся по таблице регистров
-                for (String registerTableItem[] : registerTable) {
-                    // Если имя операнда совпало с каким-либо именем из таблицы регистров
-                    if (registerTableItem[0].equals(firstOperand.toUpperCase())) {
-                        // Значит теперь наш операнд имеет тип - REGISTER
-                        firstOperandType = "REGISTER";
-                        // Заодно заберём его код, чтобы ещё раз не приходить
-                        firstOperandHex = registerTableItem[1];
-                        break;
+                
+                try {
+                    firstOperand = splittedLine[1];
+                    // Пройдёмся по таблице регистров
+                    for (String registerTableItem[] : registerTable) {
+                        // Если имя операнда совпало с каким-либо именем из таблицы регистров
+                        if (registerTableItem[0].equals(firstOperand.toUpperCase())) {
+                            // Значит теперь наш операнд имеет тип - REGISTER
+                            firstOperandType = "REGISTER";
+                            // Заодно заберём его код, чтобы ещё раз не приходить
+                            firstOperandHex = registerTableItem[1];
+                            break;
+                        }
                     }
+                } catch (Exception e) {
+                    printError(MSG_ERROR_OPERAND_NOT_ENOUGH);
+                    paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
+                    return false;
                 }
 
                 // Если тип операнда не определился после предыдущего цикла
@@ -506,16 +574,14 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                         if (sntItem[0].equals(firstOperand)) {
                             // Значит теперь наш операнд имеет тип - MEMORY
                             firstOperandType = "MEMORY";
-                            // У операнда оказался маленький код
-                            // Попросим его не расстраиваться
-                            // И предложим свою помощь:
+                            // У операнда оказался короткий код
+                            // Добавим нулей:
                             int increm = 4;
                             String zeros = "";
                             while (increm > firstOperand.length()) {
                                 zeros += "0";
                                 increm--;
                             }
-                            // Теперь все равны
                             firstOperandHex = zeros + sntItem[1];
                             break;
                         }
@@ -524,6 +590,9 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
 
                 // Если операнд оказался не памятью и не регистром
                 if (firstOperandType.equals("")) {
+                    // Вывести ошибку о неопределённом операнде
+                    printError(MSG_ERROR_OPERAND_UNDEFINED, firstOperand);
+                    paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
                     // И завершить работу приложения
                     return false;
                 }
@@ -534,7 +603,7 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                 String secondOperandType = "";
                 String secondOperandHex = "";
 
-                // Второго операнда может не оказаться, поэтому исопльзуем try{}
+                // Второго операнда может не оказаться, поэтому используем try{}
                 try {
                     // Проверяем какого типа второй операнд:
                     // Регистр, память или константа? - начало
@@ -554,7 +623,7 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                         secondOperandHex = toHex(secondOperand);
                     }
 
-                    // Операнд не оказался константой?
+                    // Операнд не оказался константой? Тогда:
                     if (secondOperandType.equals("")) {
                         // Тогда пройдёмся по таблице регистров
                         for (String registerTableItem[] : registerTable) {
@@ -569,7 +638,7 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                         }
                     }
 
-                    // Всё ещё непонятно какого он типа?
+                    // Всё ещё непонятно какого он типа? Тогда:
                     if (secondOperandType.equals("")) {
                         // Тогда пройдёмся по ТСИ
                         for (String sntItem[] : snt) {
@@ -592,13 +661,33 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
 
                     // Если операнд оказался не памятью, не регистром и не константой
                     if (secondOperandType.equals("")) {
+                        // Вывести ошибку о неопределённом операнде
+                        printError(MSG_ERROR_OPERAND_UNDEFINED, secondOperand);    
+                        paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
                         // И завершить работу приложения
                         return false;
                     }
 
                     // Проверяем какого типа второй операнд:
                     // Регистр, память или константа? - конец
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    boolean commandCanBeWithOneOperand = false;
+                    
+                    for (String[] commandTableItem : commandTable) {
+                        if (commandTableItem[0].equals(command.toUpperCase())) {
+                            if (commandTableItem[4].equals("")) {
+                                commandCanBeWithOneOperand = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!(commandCanBeWithOneOperand)) {
+                        printError(MSG_ERROR_OPERAND_NOT_ENOUGH);
+                        paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
+                        return false;
+                    }
+                }
 
                 // Определение двоичного кода команды - начало
                 String binaryCode = "";
@@ -609,8 +698,8 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                                 binaryCode = commandTable[i][1];
                                 // CA здесь меняется
                                 addressCounterCodeSegment += Integer.parseInt(commandTable[i][2]);
-                                // Проверим CA, вывовывоводив в консоль
-                                System.out.println("CA: " + Integer.toHexString(addressCounterCodeSegment));
+                                // Проверим CA, вывовывеводив в консоль
+//                                System.out.println("CA: " + Integer.toHexString(addressCounterCodeSegment));
                                 break;
                             }
                         }
@@ -629,106 +718,66 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
                 // Добавим массив в основную массу
                 hexCodesOfTheCodeSegment.add(hexCodeOfTheLine);
 
+            } else 
+            // Если сегмент не ".DATA", не ".CODE", ...
+            {
+                // Вывести ошибку о неверном сегменте
+                printError(MSG_ERROR_WRONG_SEGMENT, splittedLine[0]);
+                paintLineToRed(line, textPaneSourceSymbolsIndexCounter - line.length() - 1);
+                return false;
             }
         }
         return true;
     }
     
-    
-    
-        // Метод для преобразования строки в массив символов, а далее - в коды этих символов согласно ASCII-таблице
-        String stringToHex(String string) {
-            char charsFromString[] = string.toCharArray();
-            StringBuffer stringBuffer = new StringBuffer();
-            for (int i = 0; i < charsFromString.length; i++) {
-                String hexString = Integer.toHexString(charsFromString[i]);
-                stringBuffer.append(hexString);
-            }
-            return stringBuffer.toString();
+    // Метод для преобразования строки в массив символов, а далее - в коды этих символов согласно ASCII-таблице
+    String stringToHex(String string) {
+        char charsFromString[] = string.toCharArray();
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < charsFromString.length; i++) {
+            String hexString = Integer.toHexString(charsFromString[i]);
+            stringBuffer.append(hexString);
         }
-        
-        boolean isNumeric(String string) {
-            try {
-                Integer.parseInt(string);
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        
-        // Метод для преобразования какого-либо значения в Hex представление этого значения.
-        // Для строки метод будет использовать значения из ASCII
-        // Для "?" метод возвращает "00"
-        // Для числа метод будет использовать обычное преобразование
-        String toHex(String value) {
-            switch (value.charAt(0)) {
-                case '\'':
-                    value = value.replaceAll("[',]", "");
-                    return stringToHex(value);
-                case '?':
-                    return "00";
-                default:
-                    value = value.replaceAll("[,]", "");
-                    String hexValue = Integer.toHexString(Integer.parseInt(value));
-                    if ((hexValue.length() % 2) == 1) {
-                        hexValue = "0" + hexValue;
-                    }
-                    return hexValue;
-            }
-        }
-        
-        String[] removeEmptyValuesFromTheArray(String[] array) {
-            // Убрать пустые значения из массива строк
-            return Arrays.stream(array).filter(value ->
-                    value != null && value.length() > 0
-            )
-            .toArray(size -> new String[size]);
-        }
-        
-        // Метод для вывода ТСИ в консольку
-        void printSNT(List<String[]> snt) {
-            // Вывод ТСИ в консольку - начало
+        return stringBuffer.toString();
+    }
 
-            // Для более красивого вывода определим максимальную длину среди наименований переменных
-            int maxLengthAmongNames = 0;
-            for (String[] sntArray: snt) {
-                for (int i = 0; i < 3; i++) {
-                    if (maxLengthAmongNames < sntArray[0].length()) {
-                        maxLengthAmongNames = sntArray[0].length();
-                    }
-                }
-            }
-
-            System.out.format("%" + maxLengthAmongNames + "s", "Name");
-            System.out.println("   CA Byte Hex");
-            for (String[] sntArray: snt) {
-                for (int i = 0; i < 4; i++) {
-                    switch (i) {
-                        case 0:
-                            System.out.format("%-" + maxLengthAmongNames + "s", sntArray[i]);
-                            break;
-                        case 1:
-                            int increm = 4;
-                            while (increm > sntArray[i].length()) {
-                                System.out.print("0");
-                                increm--;
-                            }
-                            System.out.print(sntArray[i]);
-                            break;
-                        case 2:
-                            System.out.format("%4s", sntArray[i]);
-                            break;
-                        case 3:
-                            System.out.print(sntArray[i]);
-                        default:
-                            break;
-                    }
-                    System.out.print(" ");
-                }
-                System.out.println();
-            }
-            // Вывод ТСИ в консольку - конец
+    boolean isNumeric(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
+    }
+
+    // Метод для преобразования какого-либо значения в Hex представление этого значения.
+    // Для строки метод будет использовать значения из ASCII
+    // Для "?" метод возвращает "00"
+    // Для числа метод будет использовать обычное преобразование
+    String toHex(String value) {
+        switch (value.charAt(0)) {
+            case '\'':
+                value = value.replaceAll("[',]", "");
+                return stringToHex(value);
+            case '?':
+                return "00";
+            default:
+                value = value.replaceAll("[,]", "");
+                String hexValue = Integer.toHexString(Integer.parseInt(value));
+                if ((hexValue.length() % 2) == 1) {
+                    hexValue = "0" + hexValue;
+                }
+                return hexValue;
+        }
+    }
+
+    String[] removeEmptyValuesFromTheArray(String[] array) {
+        // Убрать пустые значения из массива строк
+        return Arrays.stream(array).filter(value ->
+                value != null && value.length() > 0
+        )
+        .toArray(size -> new String[size]);
+    }
         
     
     /**
@@ -767,9 +816,9 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel labelHex;
     private javax.swing.JLabel labelResult;
     private javax.swing.JLabel labelSource;
@@ -784,6 +833,6 @@ public class AsmTranslatorGUI extends javax.swing.JFrame {
     private javax.swing.JPanel panelSourceText;
     private javax.swing.JTable snt;
     private javax.swing.JTextArea textAreaHex;
-    private javax.swing.JTextArea textAreaSource;
+    private javax.swing.JTextPane textPaneSource;
     // End of variables declaration//GEN-END:variables
 }
